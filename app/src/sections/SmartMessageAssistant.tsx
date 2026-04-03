@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Sparkles, 
   User as UserIcon, 
-  Send,
   Copy,
   CheckCircle2
 } from 'lucide-react';
@@ -21,93 +20,6 @@ interface GeneratedStrategy {
   tone: string;
   messageFocus: string[];
   reason: string;
-}
-
-function generateStrategy(user: User): GeneratedStrategy {
-  // 根据Uplift类型决定策略
-  if (user.upliftType === 'adverse') {
-    return {
-      shouldContact: false,
-      recommendedSeries: '',
-      discountStrategy: '不建议发放优惠券',
-      tone: '静默',
-      messageFocus: ['停止营销触达'],
-      reason: '该用户属于反作用型，营销干预会抑制购买意愿'
-    };
-  }
-
-  if (user.upliftType === 'sleeping') {
-    return {
-      shouldContact: true,
-      recommendedSeries: productSeries[4].name, // 基础保湿系列
-      discountStrategy: '低成本福利试探',
-      tone: '轻柔唤醒',
-      messageFocus: ['温和关怀', '低频触达'],
-      reason: '沉睡型用户需用低成本方式试探响应'
-    };
-  }
-
-  // 根据肤质推荐产品
-  const skinScores = skinProductMatrix[user.skinType];
-  const bestSeries = Object.entries(skinScores)
-    .sort((a, b) => b[1] - a[1])[0][0];
-
-  // 根据用户类型调整策略
-  const isSensitive = user.upliftType === 'sensitive';
-  const isHighValue = user.userCategory === '核心价值用户';
-
-  return {
-    shouldContact: true,
-    recommendedSeries: bestSeries,
-    discountStrategy: isSensitive 
-      ? (isHighValue ? '满300减50' : '满200减30')
-      : '内容种草，弱化优惠',
-    tone: isHighValue ? '尊享专属' : '亲切关怀',
-    messageFocus: isSensitive 
-      ? ['限时优惠', '专属福利', '立即行动']
-      : ['产品功效', '成分科普', '会员权益'],
-    reason: `该用户属于${user.upliftType === 'sensitive' ? '敏感型' : '自然转化型'}，` +
-           `肤质为${user.skinType}，推荐${bestSeries}（匹配度${skinScores[bestSeries]}）`
-  };
-}
-
-function generateMessage(user: User, style: 'gentle' | 'promotional' | 'vip', strategy: GeneratedStrategy): string {
-  const skinType = user.skinType;
-  const series = strategy.recommendedSeries;
-  const discount = strategy.discountStrategy;
-  
-  const greetings: Record<string, string> = {
-    gentle: `亲爱的用户，`,
-    promotional: `限时特惠！`,
-    vip: `尊敬的VIP会员，`
-  };
-
-  const skinDescriptions: Record<string, string> = {
-    '敏感肌': '敏感肌需要特别呵护',
-    '油性/混油': '清爽控油是您的护肤关键',
-    '干性/混干': '深层补水滋养您的肌肤',
-    '中性': '维持肌肤平衡状态'
-  };
-
-  const seriesEffects: Record<string, string> = {
-    '源力系列': '修护屏障，舒缓敏感',
-    '红宝石系列': '抗皱紧致，焕活年轻',
-    '双抗系列': '抗氧化提亮，告别暗沉',
-    '能量系列': '抗衰紧致，重塑轮廓',
-    '基础保湿系列': '温和补水，日常护理'
-  };
-
-  const endings: Record<string, string> = {
-    gentle: `期待为您带来温柔的护肤体验。`,
-    promotional: `库存有限，立即抢购！`,
-    vip: `感谢您一直以来的信任与支持。`
-  };
-
-  if (!strategy.shouldContact) {
-    return '【系统建议】该用户属于反作用型，不建议发送营销私信，避免造成用户流失。';
-  }
-
-  return `${greetings[style]}\n\n${skinDescriptions[skinType]}，我们为您精选了${series}，${seriesEffects[series] || '满足您的护肤需求'}。${style === 'promotional' ? `现在下单立享${discount}！` : `专属礼遇：${discount}。`}\n\n${endings[style]}`;
 }
 
 export default function SmartMessageAssistant() {
@@ -261,11 +173,11 @@ ${customSkill ? `自定义Skill：${customSkill}` : ''}
         
         setGeneratedMessage(result.message);
         setStrategy(result.strategy);
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.error('解析AI返回结果失败:', parseError);
-        throw new Error(`解析AI返回结果失败: ${parseError.message}`);
+        throw new Error(`解析AI返回结果失败: ${parseError.message || '未知错误'}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('生成文案失败:', err);
       const errorMsg = err.message || '未知错误';
       setGeneratedMessage(`AI调用失败: ${errorMsg}`);
