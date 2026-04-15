@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
@@ -11,7 +12,7 @@ import {
   LineChart
 } from 'lucide-react';
 import { coreMetrics, monthlySales } from '@/data/mockData';
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart as RechartsLineChart, Line, Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface MetricCardProps {
   title: string;
@@ -20,28 +21,41 @@ interface MetricCardProps {
   icon: React.ReactNode;
   trend?: string;
   color: string;
+  borderColor?: string;
 }
 
-function MetricCard({ title, value, subtitle, icon, trend, color }: MetricCardProps) {
+function MetricCard({ title, value, subtitle, icon, trend, color, borderColor = 'border-gray-200' }: MetricCardProps) {
+  const [borderWidth, setBorderWidth] = useState(0);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBorderWidth(2);
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+    <Card className={`hover:shadow-lg transition-shadow duration-300 rounded-xl shadow-md bg-white backdrop-blur-sm relative`} style={{ borderWidth: borderWidth, borderColor: borderColor.replace('border-', ''), transition: 'border-width 1s ease-out' }}>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-            <h3 className="text-3xl font-bold text-gray-800">{value}</h3>
-            {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
-            {trend && (
-              <div className="flex items-center mt-2">
-                <span className="text-xs font-medium text-emerald-500 flex items-center">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  {trend}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className={`p-3 rounded-xl ${color}`}>
+        <div className="flex items-start gap-4">
+          <div className={`p-2 rounded-lg ${color}`}>
             {icon}
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+            <div className="space-y-3">
+              <p className="text-2xl font-bold text-gray-800">{value}</p>
+              {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+              {trend && (
+                <div className="flex items-center mt-1">
+                  <span className="text-sm font-medium text-emerald-500 flex items-center">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    {trend}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
@@ -56,13 +70,6 @@ export default function HomeOverview() {
     <div className="space-y-8">
       {/* 标题区 */}
       <div className="text-center py-8">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Sparkles className="w-6 h-6 text-rose-400" />
-          <Badge variant="secondary" className="bg-rose-50 text-rose-600 border-rose-200">
-            2025中国大学生计算机设计大赛 · 大数据实践赛
-          </Badge>
-          <Sparkles className="w-6 h-6 text-rose-400" />
-        </div>
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
           解码"她"的数据
         </h1>
@@ -86,13 +93,14 @@ export default function HomeOverview() {
       </div>
 
       {/* 核心指标卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <MetricCard
           title="总销售额"
           value={`¥${(coreMetrics.totalSales / 10000).toFixed(0)}万`}
           subtitle={`${coreMetrics.totalOrders.toLocaleString()} 订单`}
           icon={<ShoppingBag className="w-6 h-6 text-white" />}
           color="bg-gradient-to-br from-purple-400 to-purple-500"
+          borderColor="border-2 border-purple-400"
         />
         <MetricCard
           title="总销售数量"
@@ -100,39 +108,92 @@ export default function HomeOverview() {
           subtitle="件商品"
           icon={<BarChart3 className="w-6 h-6 text-white" />}
           color="bg-gradient-to-br from-amber-400 to-amber-500"
+          borderColor="border-2 border-amber-400"
         />
       </div>
 
-      {/* 月销量折线图 */}
+      {/* 月销量柱状图 */}
+      <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <BarChart3 className="w-5 h-5 text-rose-400" />
+            <h3 className="text-xl font-bold text-gray-800">月销量趋势</h3>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={monthlySales}
+                margin={{ top: 20, right: 40, left: 20, bottom: 20 }}
+              >
+                <defs>
+                  <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
+                    <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" tick={{ fontSize: 12 }} />
+                <YAxis 
+                  stroke="#6b7280"
+                  tickFormatter={(value) => `${value}`}
+                  tick={{ fontSize: 12 }}
+                  domain={[0, 70000]}
+                  label={{ value: '月销量（订单数）', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+                />
+                <Tooltip 
+                  formatter={(value) => [`${value} 订单`, '月销量']}
+                  labelFormatter={(label) => `${label}`}
+                />
+                <Bar 
+                  dataKey="sales" 
+                  fill="url(#salesGradient)" 
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 月总收入折线图 */}
       <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-6">
             <LineChart className="w-5 h-5 text-rose-400" />
-            <h3 className="text-xl font-bold text-gray-800">月销量趋势</h3>
+            <h3 className="text-xl font-bold text-gray-800">月总收入趋势</h3>
           </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsLineChart
                 data={monthlySales}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                margin={{ top: 20, right: 40, left: 20, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#6b7280" />
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" tick={{ fontSize: 12 }} />
                 <YAxis 
                   stroke="#6b7280"
-                  tickFormatter={(value) => `¥${(value / 10000).toFixed(0)}万`}
+                  tickFormatter={(value) => `${value}`}
+                  tick={{ fontSize: 12 }}
+                  domain={[0, 3000]}
+                  label={{ value: '月总收入（万元）', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
                 />
                 <Tooltip 
-                  formatter={(value) => [`¥${(value as number / 10000).toFixed(0)}万`, '销量']}
+                  formatter={(value) => [`${value} 万元`, '月总收入']}
                   labelFormatter={(label) => `${label}`}
                 />
                 <Line 
                   type="monotone" 
-                  dataKey="sales" 
-                  stroke="#f472b6" 
+                  dataKey="revenue" 
+                  stroke="url(#revenueGradient)" 
                   strokeWidth={2}
-                  dot={{ r: 4, fill: '#f472b6' }}
-                  activeDot={{ r: 6, fill: '#ec4899' }}
+                  dot={{ r: 4, fill: '#7c3aed' }}
+                  activeDot={{ r: 6, fill: '#7c3aed' }}
                 />
               </RechartsLineChart>
             </ResponsiveContainer>
@@ -146,7 +207,7 @@ export default function HomeOverview() {
         核心创新点
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-rose-50/80 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="space-y-3">
               <div className="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center">
@@ -160,7 +221,7 @@ export default function HomeOverview() {
             </div>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-purple-50/80 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="space-y-3">
               <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
@@ -174,7 +235,7 @@ export default function HomeOverview() {
             </div>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md bg-blue-50/80 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="space-y-3">
               <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">

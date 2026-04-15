@@ -16,19 +16,19 @@ function generateUsers(): User[] {
     iteBase: number;
   }> = [
     // 核心价值用户模式
-    { category: '核心价值用户', cluster: '簇0_高价值_抗衰+修护_高活跃高频高消费', rScore: 5, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.1 },
-    { category: '核心价值用户', cluster: '簇0_高价值_抗衰+修护_高活跃高频高消费', rScore: 4, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.12 },
-    { category: '核心价值用户', cluster: '簇0_高价值_抗衰+修护_高活跃高频高消费', rScore: 5, fScore: 5, mScore: 5, uplift: 'sensitive', iteBase: 0.14 },
+    { category: '核心价值用户', cluster: '簇0_全效臻选型', rScore: 5, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.1 },
+    { category: '核心价值用户', cluster: '簇0_全效臻选型', rScore: 4, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.12 },
+    { category: '核心价值用户', cluster: '簇0_全效臻选型', rScore: 5, fScore: 5, mScore: 5, uplift: 'sensitive', iteBase: 0.14 },
     // 潜力发展用户模式
-    { category: '潜力发展用户', cluster: '簇4_中价值_抗衰+抗氧化_中活跃中频高消费', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.07 },
-    { category: '潜力发展用户', cluster: '簇4_中价值_抗衰+抗氧化_中活跃中频高消费', rScore: 3, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.08 },
-    { category: '潜力发展用户', cluster: '簇2_中价值_修护+保湿_中活跃中频高消费', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.09 },
+    { category: '潜力发展用户', cluster: '簇4_抗氧清爽型', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.07 },
+    { category: '潜力发展用户', cluster: '簇4_抗氧清爽型', rScore: 3, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.08 },
+    { category: '潜力发展用户', cluster: '簇2_修护保湿型', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.09 },
     // 高价值沉睡用户模式
-    { category: '高价值沉睡用户', cluster: '簇3_中价值_抗衰+修护_低活跃中频高消费', rScore: 3, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.05 },
-    { category: '高价值沉睡用户', cluster: '簇3_中价值_抗衰+修护_低活跃中频高消费', rScore: 2, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.06 },
+    { category: '高价值沉睡用户', cluster: '簇3_功效深研型', rScore: 3, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.05 },
+    { category: '高价值沉睡用户', cluster: '簇3_功效深研型', rScore: 2, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.06 },
     // 低价值/流失用户模式
-    { category: '低价值/流失用户', cluster: '簇1_低价值_保湿+修护_低活跃低频低消费', rScore: 2, fScore: 1, mScore: 2, uplift: 'adverse', iteBase: -0.03 },
-    { category: '低价值/流失用户', cluster: '簇6_低价值_抗氧化+清爽_低活跃低频中消费', rScore: 1, fScore: 1, mScore: 1, uplift: 'adverse', iteBase: -0.02 }
+    { category: '低价值/流失用户', cluster: '簇1_修护基础型', rScore: 2, fScore: 1, mScore: 2, uplift: 'adverse', iteBase: -0.03 },
+    { category: '低价值/流失用户', cluster: '簇6_清爽抗氧型', rScore: 1, fScore: 1, mScore: 1, uplift: 'adverse', iteBase: -0.02 }
   ];
 
   const preferredSeriesOptions = [
@@ -233,10 +233,10 @@ function generateMessageUsers(): User[] {
     uplift: 'sensitive' | 'natural' | 'sleeping' | 'adverse';
     iteBase: number;
   }> = [
-    { category: '核心价值用户', cluster: '簇0_高价值_抗衰+修护_高活跃高频高消费', rScore: 5, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.1 },
-    { category: '潜力发展用户', cluster: '簇4_中价值_抗衰+抗氧化_中活跃中频高消费', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.07 },
-    { category: '高价值沉睡用户', cluster: '簇3_中价值_抗衰+修护_低活跃中频高消费', rScore: 3, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.05 },
-    { category: '低价值/流失用户', cluster: '簇1_低价值_保湿+修护_低活跃低频低消费', rScore: 2, fScore: 1, mScore: 2, uplift: 'adverse', iteBase: -0.03 }
+    { category: '核心价值用户', cluster: '簇0_全效臻选型', rScore: 5, fScore: 4, mScore: 5, uplift: 'sensitive', iteBase: 0.1 },
+    { category: '潜力发展用户', cluster: '簇4_抗氧清爽型', rScore: 4, fScore: 3, mScore: 4, uplift: 'natural', iteBase: 0.07 },
+    { category: '高价值沉睡用户', cluster: '簇3_功效深研型', rScore: 3, fScore: 2, mScore: 3, uplift: 'sleeping', iteBase: 0.05 },
+    { category: '低价值/流失用户', cluster: '簇1_修护基础型', rScore: 2, fScore: 1, mScore: 2, uplift: 'adverse', iteBase: -0.03 }
   ];
 
   const preferredSeriesOptions = [
@@ -407,20 +407,21 @@ export const coreMetrics = {
   avgUplift: 8.70
 };
 
-// 月销量数据
+// 月销量数据（从CSV文件导入）
 export const monthlySales = [
-  { month: '1月', sales: 4200000 },
-  { month: '2月', sales: 4800000 },
-  { month: '3月', sales: 5200000 },
-  { month: '4月', sales: 4900000 },
-  { month: '5月', sales: 5500000 },
-  { month: '6月', sales: 6100000 },
-  { month: '7月', sales: 5800000 },
-  { month: '8月', sales: 6300000 },
-  { month: '9月', sales: 6800000 },
-  { month: '10月', sales: 7200000 },
-  { month: '11月', sales: 7500000 },
-  { month: '12月', sales: 8000000 }
+  { month: '2025-03', sales: 6309, revenue: 273.13 },
+  { month: '2025-04', sales: 17235, revenue: 741.09 },
+  { month: '2025-05', sales: 24867, revenue: 1073.76 },
+  { month: '2025-06', sales: 52066, revenue: 2234.79 },
+  { month: '2025-07', sales: 17499, revenue: 749.80 },
+  { month: '2025-08', sales: 24904, revenue: 1069.46 },
+  { month: '2025-09', sales: 24249, revenue: 1035.90 },
+  { month: '2025-10', sales: 25075, revenue: 1087.37 },
+  { month: '2025-11', sales: 68000, revenue: 2911.63 },
+  { month: '2025-12', sales: 31021, revenue: 1332.46 },
+  { month: '2026-01', sales: 30499, revenue: 1310.54 },
+  { month: '2026-02', sales: 34869, revenue: 1487.33 },
+  { month: '2026-03', sales: 36618, revenue: 1563.53 }
 ];
 
 // 用户画像分布
@@ -445,10 +446,10 @@ export const userProfileDistribution = {
 
 // K-means 聚类结果（基于CSV文件数据）
 export const kmeansClusters = [
-  { 
-    name: '簇0_高价值_抗衰+修护_高活跃高频高消费', 
-    count: 2077, 
-    color: '#FF6B6B',
+  {
+    name: '簇0_全效臻选型',
+    count: 2077,
+    color: '#F9A8D4',
     valueLevel: '高价值',
     coreNeeds: '抗衰 + 修护',
     activityLevel: '高',
@@ -456,10 +457,10 @@ export const kmeansClusters = [
     productLine: '红宝石系列 + 源力系列',
     marketingStrategy: '专属会员服务、新品优先体验'
   },
-  { 
-    name: '簇1_低价值_保湿+修护_低活跃低频低消费', 
-    count: 761, 
-    color: '#4ECDC4',
+  {
+    name: '簇1_修护基础型',
+    count: 761,
+    color: '#D8B4FE',
     valueLevel: '低价值',
     coreNeeds: '保湿 + 修护',
     activityLevel: '低',
@@ -467,10 +468,10 @@ export const kmeansClusters = [
     productLine: '基础保湿线',
     marketingStrategy: '低成本引流活动、首单优惠'
   },
-  { 
-    name: '簇2_中价值_修护+保湿_中活跃中频高消费', 
-    count: 582, 
-    color: '#45B7D1',
+  {
+    name: '簇2_修护保湿型',
+    count: 582,
+    color: '#FBCFE8',
     valueLevel: '中价值',
     coreNeeds: '修护 + 保湿',
     activityLevel: '中',
@@ -478,10 +479,10 @@ export const kmeansClusters = [
     productLine: '源力系列',
     marketingStrategy: '常规运营、修护专题推送'
   },
-  { 
-    name: '簇3_中价值_抗衰+修护_低活跃中频高消费', 
-    count: 1302, 
-    color: '#96CEB4',
+  {
+    name: '簇3_功效深研型',
+    count: 1302,
+    color: '#C4B5FD',
     valueLevel: '中价值',
     coreNeeds: '抗衰 + 修护',
     activityLevel: '低',
@@ -489,10 +490,10 @@ export const kmeansClusters = [
     productLine: '红宝石系列',
     marketingStrategy: '沉睡用户唤醒、满减优惠'
   },
-  { 
-    name: '簇4_中价值_抗衰+抗氧化_中活跃中频高消费', 
-    count: 1028, 
-    color: '#FFEAA7',
+  {
+    name: '簇4_抗氧清爽型',
+    count: 1028,
+    color: '#EDE9FE',
     valueLevel: '中价值',
     coreNeeds: '抗衰 + 抗氧化',
     activityLevel: '中',
@@ -500,10 +501,10 @@ export const kmeansClusters = [
     productLine: '双抗系列',
     marketingStrategy: '精准产品推荐、组合套装'
   },
-  { 
-    name: '簇5_中价值_清爽+保湿_中活跃中频高消费', 
-    count: 1369, 
-    color: '#DDA0DD',
+  {
+    name: '簇5_清爽保湿型',
+    count: 1369,
+    color: '#FDE68A',
     valueLevel: '中价值',
     coreNeeds: '清爽 + 保湿',
     activityLevel: '中',
@@ -511,10 +512,10 @@ export const kmeansClusters = [
     productLine: '油皮专属保湿线',
     marketingStrategy: '肤质匹配推送、夏季专题'
   },
-  { 
-    name: '簇6_低价值_抗氧化+清爽_低活跃低频中消费', 
-    count: 586, 
-    color: '#98D8C8',
+  {
+    name: '簇6_清爽抗氧型',
+    count: 586,
+    color: '#FCD34D',
     valueLevel: '低价值',
     coreNeeds: '抗氧化 + 清爽',
     activityLevel: '低',
@@ -522,10 +523,10 @@ export const kmeansClusters = [
     productLine: '基础双抗线',
     marketingStrategy: '入门产品引流、试用装活动'
   },
-  { 
-    name: '簇7_低价值_抗衰+抗皱_低活跃低频中消费', 
-    count: 590, 
-    color: '#F7DC6F',
+  {
+    name: '簇7_抗衰尝鲜型',
+    count: 590,
+    color: '#FBBF24',
     valueLevel: '低价值',
     coreNeeds: '抗衰 + 抗皱',
     activityLevel: '低',
@@ -533,10 +534,10 @@ export const kmeansClusters = [
     productLine: '基础抗衰线',
     marketingStrategy: '低成本转化、老品折扣'
   },
-  { 
-    name: '簇8_中价值_抗衰+抗氧化_中活跃中频高消费', 
-    count: 870, 
-    color: '#BB8FCE',
+  {
+    name: '簇8_抗衰偏执型',
+    count: 870,
+    color: '#C4B5FD',
     valueLevel: '中价值',
     coreNeeds: '抗衰 + 抗氧化',
     activityLevel: '中',
@@ -545,9 +546,9 @@ export const kmeansClusters = [
     marketingStrategy: '中频运营、节日促销'
   },
   { 
-    name: '簇9_中价值_抗衰+清爽_中活跃中频高消费', 
+    name: '簇9_抗衰清爽型', 
     count: 835, 
-    color: '#85C1E9',
+    color: '#E0E7FF',
     valueLevel: '中价值',
     coreNeeds: '抗衰 + 清爽',
     activityLevel: '中',

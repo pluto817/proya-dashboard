@@ -8,7 +8,9 @@ import {
   DollarSign,
   Sparkles,
   ShoppingCart,
-  LogOut
+  LogOut,
+  Package,
+  AlertTriangle
 } from 'lucide-react';
 import HomeOverview from '@/sections/HomeOverview';
 import UserInsightCenter from '@/sections/UserInsightCenter';
@@ -16,6 +18,8 @@ import UpliftDecisionCenter from '@/sections/UpliftDecisionCenter';
 import SmartMessageAssistant from '@/sections/SmartMessageAssistant';
 import ROIEvaluation from '@/sections/ROIEvaluation';
 import ShoppingBasketAnalysis from '@/sections/ShoppingBasketAnalysis';
+import SmartReplenishment from '@/sections/SmartReplenishment';
+import RiskWarning from '@/sections/RiskWarning';
 import Login from '@/sections/Login';
 
 function App() {
@@ -68,9 +72,7 @@ function App() {
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">退出登录</span>
               </button>
-              <span className="text-xs text-gray-400 hidden sm:inline">
-                2025中国大学生计算机设计大赛 · 大数据实践赛
-              </span>
+
             </div>
           </div>
         </div>
@@ -79,17 +81,17 @@ function App() {
       {/* 主内容区 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8 bg-white/60 backdrop-blur-sm p-1 rounded-xl">
+          <TabsList className="grid w-full grid-cols-8 mb-8 bg-white/60 backdrop-blur-sm p-1 rounded-xl">
             <TabsTrigger 
               value="home" 
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-400 data-[state=active]:to-rose-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-400 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
             >
               <Home className="w-4 h-4" />
               <span className="hidden sm:inline">首页总览</span>
             </TabsTrigger>
             <TabsTrigger 
               value="insight"
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-400 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-400 data-[state=active]:to-rose-500 data-[state=active]:text-white rounded-lg transition-all"
             >
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">用户洞察</span>
@@ -116,6 +118,20 @@ function App() {
               <span className="hidden sm:inline">ROI评估</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="replenishment"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-lg transition-all"
+            >
+              <Package className="w-4 h-4" />
+              <span className="hidden sm:inline">智能补货</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="risk"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-400 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-lg transition-all"
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span className="hidden sm:inline">风险预警</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="message"
               className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-lg transition-all"
             >
@@ -130,6 +146,14 @@ function App() {
 
           <TabsContent value="insight" className="mt-0">
             <UserInsightCenter />
+          </TabsContent>
+
+          <TabsContent value="replenishment" className="mt-0">
+            <SmartReplenishment />
+          </TabsContent>
+
+          <TabsContent value="risk" className="mt-0">
+            <RiskWarning />
           </TabsContent>
 
           <TabsContent value="uplift" className="mt-0">

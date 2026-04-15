@@ -14,6 +14,7 @@ export interface User {
   ite: number;
   upliftType: 'sensitive' | 'natural' | 'adverse' | 'sleeping';
   preferredSeries: string[];
+  recommendedProduct: string;
 }
 
 // 订单类型定义

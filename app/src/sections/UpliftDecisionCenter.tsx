@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -40,16 +40,31 @@ function QiniCurve() {
   const height = 250;
   const padding = 40;
   
+  const [progress, setProgress] = useState(0);
+  
+  // 动画效果
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgress(100);
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   const xScale = (x: number) => padding + (x / 100) * (width - 2 * padding);
   const yScale = (y: number) => height - padding - (y / 60) * (height - 2 * padding);
   
-  const curvePath = curvePoints.map((p, i) => 
-    `${i === 0 ? 'M' : 'L'} ${xScale(p.x)} ${yScale(p.y)}`
-  ).join(' ');
+  // 根据进度计算当前路径
+  const getPath = (points: typeof curvePoints) => {
+    const totalPoints = points.length;
+    const currentPoints = Math.min(Math.ceil((progress / 100) * totalPoints), totalPoints);
+    return points.slice(0, currentPoints).map((p, i) => 
+      `${i === 0 ? 'M' : 'L'} ${xScale(p.x)} ${yScale(p.y)}`
+    ).join(' ');
+  };
   
-  const randomPath = randomPoints.map((p, i) => 
-    `${i === 0 ? 'M' : 'L'} ${xScale(p.x)} ${yScale(p.y)}`
-  ).join(' ');
+  const curvePath = getPath(curvePoints);
+  const randomPath = getPath(randomPoints);
   
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
@@ -60,8 +75,9 @@ function QiniCurve() {
             x1={xScale(tick)} y1={yScale(0)} 
             x2={xScale(tick)} y2={yScale(60)} 
             stroke="#e5e7eb" strokeDasharray="4"
+            style={{ opacity: progress / 100 }}
           />
-          <text x={xScale(tick)} y={yScale(0) + 15} textAnchor="middle" className="text-xs fill-gray-400">
+          <text x={xScale(tick)} y={yScale(0) + 15} textAnchor="middle" className="text-xs fill-gray-400" style={{ opacity: progress / 100 }}>
             {tick}%
           </text>
         </g>
@@ -72,38 +88,65 @@ function QiniCurve() {
             x1={xScale(0)} y1={yScale(tick)} 
             x2={xScale(100)} y2={yScale(tick)} 
             stroke="#e5e7eb" strokeDasharray="4"
+            style={{ opacity: progress / 100 }}
           />
-          <text x={xScale(0) - 10} y={yScale(tick) + 4} textAnchor="end" className="text-xs fill-gray-400">
+          <text x={xScale(0) - 10} y={yScale(tick) + 4} textAnchor="end" className="text-xs fill-gray-400" style={{ opacity: progress / 100 }}>
             {tick}%
           </text>
         </g>
       ))}
       
       {/* 随机基线 */}
-      <path d={randomPath} fill="none" stroke="#9ca3af" strokeWidth="2" strokeDasharray="8" />
-      
-      {/* Qini曲线 */}
-      <path d={curvePath} fill="none" stroke="#f43f5e" strokeWidth="3" />
-      
-      {/* 区域填充 */}
       <path 
-        d={`${curvePath} L ${xScale(100)} ${yScale(0)} L ${xScale(0)} ${yScale(0)} Z`} 
-        fill="rgba(244, 63, 94, 0.1)" 
+        d={randomPath} 
+        fill="none" 
+        stroke="#9ca3af" 
+        strokeWidth="2" 
+        strokeDasharray="8"
+        style={{ 
+          transition: 'all 1s ease-out',
+          strokeDashoffset: 0
+        }}
       />
       
+      {/* Qini曲线 */}
+      <path 
+        d={curvePath} 
+        fill="none" 
+        stroke="#f43f5e" 
+        strokeWidth="3"
+        style={{ 
+          transition: 'all 1.5s ease-out',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round'
+        }}
+      />
+      
+      {/* 区域填充 */}
+      {progress > 0 && (
+        <path 
+          d={`${curvePath} L ${xScale(100 * (progress / 100))} ${yScale(0)} L ${xScale(0)} ${yScale(0)} Z`} 
+          fill="rgba(244, 63, 94, 0.1)"
+          style={{ 
+            transition: 'all 1.5s ease-out'
+          }}
+        />
+      )}
+      
       {/* 标签 */}
-      <text x={xScale(70)} y={yScale(35)} className="text-sm fill-gray-500">随机基线</text>
-      <text x={xScale(50)} y={yScale(48)} className="text-sm fill-rose-500 font-medium">Uplift模型</text>
+      <text x={xScale(70)} y={yScale(35)} className="text-sm fill-gray-500" style={{ opacity: progress / 100 }}>随机基线</text>
+      <text x={xScale(50)} y={yScale(48)} className="text-sm fill-rose-500 font-medium" style={{ opacity: progress / 100 }}>Uplift模型</text>
       
       {/* 轴标签 */}
-      <text x={width / 2} y={height - 5} textAnchor="middle" className="text-sm fill-gray-600">
+      <text x={width / 2} y={height - 5} textAnchor="middle" className="text-sm fill-gray-600" style={{ opacity: progress / 100 }}>
         累计人群比例
       </text>
       <text 
-        x={15} y={height / 2} 
+        x={10} y={height / 2} 
         textAnchor="middle" 
-        transform={`rotate(-90, 15, ${height / 2})`}
+        transform={`rotate(-90, 10, ${height / 2})`}
         className="text-sm fill-gray-600"
+        style={{ opacity: progress / 100 }}
       >
         累计增益
       </text>
@@ -130,7 +173,7 @@ function UserTypeCard({
   stats: { label: string; value: string }[];
 }) {
   return (
-    <Card className={`hover:shadow-lg transition-shadow border-l-4 ${color}`}>
+    <Card className={`hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border-l-4 ${color}`}>
       <CardContent className="p-5">
         <div className="flex items-start gap-4">
           <div className={`p-3 rounded-xl ${bgColor}`}>
@@ -170,6 +213,26 @@ export default function UpliftDecisionCenter() {
   
   const [selectedSensitiveUser, setSelectedSensitiveUser] = useState(sensitiveUsers[0]?.id || '');
   const [selectedAdverseUser, setSelectedAdverseUser] = useState(adverseUsers[0]?.id || '');
+  
+  // 分类统计进度条动画
+  const [progressValues, setProgressValues] = useState<{[key: string]: number}>(
+    upliftStats.reduce((acc, stat) => {
+      acc[stat.type] = 0;
+      return acc;
+    }, {} as {[key: string]: number})
+  );
+  
+  // 启动进度条动画
+  useEffect(() => {
+    upliftStats.forEach((stat, index) => {
+      setTimeout(() => {
+        setProgressValues(prev => ({
+          ...prev,
+          [stat.type]: parseFloat(stat.percentage)
+        }));
+      }, index * 200);
+    });
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -200,7 +263,7 @@ export default function UpliftDecisionCenter() {
 
         {/* 模型原理 */}
         <TabsContent value="overview" className="space-y-4">
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Brain className="w-5 h-5 text-rose-500" />
@@ -209,7 +272,7 @@ export default function UpliftDecisionCenter() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-rose-50 rounded-xl">
+                <div className="p-4 bg-rose-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                   <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center mb-3">
                     <span className="text-lg font-bold text-rose-500">1</span>
                   </div>
@@ -218,7 +281,7 @@ export default function UpliftDecisionCenter() {
                     基于Rubin因果模型，每个用户在干预（发券）和未干预（不发券）两种状态下存在两个"潜在结果"
                   </p>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-xl">
+                <div className="p-4 bg-purple-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                     <span className="text-lg font-bold text-purple-500">2</span>
                   </div>
@@ -227,7 +290,7 @@ export default function UpliftDecisionCenter() {
                     ITE = Y(1) - Y(0)，表示营销干预带来的真实增量效果，区分自然转化与营销驱动转化
                   </p>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-xl">
+                <div className="p-4 bg-blue-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                     <span className="text-lg font-bold text-blue-500">3</span>
                   </div>
@@ -241,25 +304,25 @@ export default function UpliftDecisionCenter() {
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-800">实验设计</h4>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Card className="hover:shadow-lg transition-shadow bg-rose-50">
+                  <Card className="hover:shadow-lg transition-shadow duration-300 hover:-translate-y-1 cursor-pointer bg-rose-50">
                     <CardContent className="p-4">
                       <h5 className="text-sm font-medium text-rose-700 mb-2">干预定义</h5>
                       <p className="text-sm text-gray-700">向用户发送"满200减30"通用优惠券，有效期30天</p>
                     </CardContent>
                   </Card>
-                  <Card className="hover:shadow-lg transition-shadow bg-purple-50">
+                  <Card className="hover:shadow-lg transition-shadow duration-300 hover:-translate-y-1 cursor-pointer bg-purple-50">
                     <CardContent className="p-4">
                       <h5 className="text-sm font-medium text-purple-700 mb-2">分组策略</h5>
                       <p className="text-sm text-gray-700">83,672名用户完全随机分组，50%处理组，50%对照组</p>
                     </CardContent>
                   </Card>
-                  <Card className="hover:shadow-lg transition-shadow bg-blue-50">
+                  <Card className="hover:shadow-lg transition-shadow duration-300 hover:-translate-y-1 cursor-pointer bg-blue-50">
                     <CardContent className="p-4">
                       <h5 className="text-sm font-medium text-blue-700 mb-2">特征窗口</h5>
                       <p className="text-sm text-gray-700">2025-06-26 ~ 2025-12-23（180天历史行为）</p>
                     </CardContent>
                   </Card>
-                  <Card className="hover:shadow-lg transition-shadow bg-green-50">
+                  <Card className="hover:shadow-lg transition-shadow duration-300 hover:-translate-y-1 cursor-pointer bg-green-50">
                     <CardContent className="p-4">
                       <h5 className="text-sm font-medium text-green-700 mb-2">实验窗口</h5>
                       <p className="text-sm text-gray-700">2025-12-23 ~ 2026-03-23（90天观察期）</p>
@@ -276,7 +339,7 @@ export default function UpliftDecisionCenter() {
 
         {/* Qini曲线 */}
         <TabsContent value="qini" className="space-y-4">
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-rose-500" />
@@ -289,21 +352,21 @@ export default function UpliftDecisionCenter() {
                   <QiniCurve />
                 </div>
                 <div className="space-y-4">
-                  <div className="p-4 bg-rose-50 rounded-xl">
+                  <div className="p-4 bg-rose-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <p className="text-sm text-gray-500 mb-1">Qini系数</p>
                     <p className="text-3xl font-bold text-rose-500">{coreMetrics.qiniCoefficient}</p>
                     <p className="text-xs text-gray-500 mt-1">
                       模型排序能力优于随机策略，同等预算下多获得8.0%额外转化
                     </p>
                   </div>
-                  <div className="p-4 bg-emerald-50 rounded-xl">
+                  <div className="p-4 bg-emerald-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <p className="text-sm text-gray-500 mb-1">真实平均Uplift</p>
                     <p className="text-3xl font-bold text-emerald-500">+{coreMetrics.avgUplift}%</p>
                     <p className="text-xs text-gray-500 mt-1">
                       优惠券整体提升8.70个百分点购买转化率
                     </p>
                   </div>
-                  <div className="p-4 bg-blue-50 rounded-xl">
+                  <div className="p-4 bg-blue-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <p className="text-sm text-gray-500 mb-1">关键发现</p>
                     <p className="text-sm text-gray-700">
                       前30%人群贡献了约32.3%的累计增益，说明模型将高敏感用户集中在排序前列
@@ -372,18 +435,18 @@ export default function UpliftDecisionCenter() {
             />
           </div>
 
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
             <CardHeader>
               <CardTitle className="text-lg">分类统计</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {upliftStats.map((stat) => (
+                {upliftStats.map((stat, index) => (
                   <div key={stat.type} className="flex items-center gap-4">
                     <div className="w-24 text-sm font-medium">{stat.type}</div>
                     <div className="flex-1">
                       <Progress 
-                        value={parseFloat(stat.percentage)} 
+                        value={progressValues[stat.type]} 
                         className="h-3"
                       />
                     </div>
@@ -399,7 +462,7 @@ export default function UpliftDecisionCenter() {
 
         {/* 画像对比 */}
         <TabsContent value="comparison" className="space-y-4">
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
             <CardHeader>
               <CardTitle className="text-lg">敏感型 vs 反作用型 用户画像对比</CardTitle>
             </CardHeader>
@@ -449,7 +512,7 @@ export default function UpliftDecisionCenter() {
                 </table>
               </div>
 
-              <div className="mt-6 p-4 bg-amber-50 rounded-xl">
+              <div className="mt-6 p-4 bg-amber-50 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
                   <div>
@@ -465,7 +528,7 @@ export default function UpliftDecisionCenter() {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-rose-500" />
@@ -511,7 +574,7 @@ export default function UpliftDecisionCenter() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <XCircle className="w-5 h-5 text-amber-500" />
